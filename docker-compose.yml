@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+  nginx:
+    image: bitnami/nginx:1.10.0-r0
+    links:
+      - yii2:yii2
+    ports:
+      - ${HTTP_PORT}:9900
+    volumes:
+      - ./src:/app
+      - ./docker/nginx/logs:/var/log/nginx
+      - ./docker/nginx/nginx.conf:/bitnami/nginx/conf/vhosts/nginx.conf:ro
+  yii2:
+    links:
+      - postgres:postgres
+    build:
+      context: ./docker/php
+    volumes:
+      - ./src:/app
+  postgres:
+    image: postgres:9.3
+    ports:
+      - 54320:5432
+    volumes:
+      - ./docker/postgresql/data:/var/lib/postgresql/data/pgdata:Z
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: ${PG_DB}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASS}
