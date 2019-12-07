@@ -3,6 +3,10 @@ use yii\widgets\ActiveForm;
 use \yii\helpers\Html;
 use \yii\widgets\LinkPager;
 
+/**
+ * @var object $models
+ * @var int $pages
+*/
 ?>
 <table>
     <tr>
@@ -16,7 +20,7 @@ use \yii\widgets\LinkPager;
             <td><?= $form->field($model, 'id')->hiddenInput(); ?></td>
             <td><?= $form->field($model, 'word')->textInput(); ?></td>
             <td><?= $form->field($model, 'translate')->textInput(); ?></td>
-            <td><?= Html::submitButton('delete', ['class' => 'btn btn-primary', 'name' => 'delete-button']) ?></td>
+            <td><?= Html::submitButton('delete', ['type' => 'submit','class' => 'btn btn-primary', 'name' => 'delete-button']) ?></td>
         </tr>
 
         <? ActiveForm::end(); ?>

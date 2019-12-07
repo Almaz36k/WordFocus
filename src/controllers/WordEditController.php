@@ -1,11 +1,10 @@
 <?php
 namespace app\controllers;
 
-use Yii;
 use app\models\Words;
 use yii\data\Pagination;
 use \yii\web\Controller;
-class WordEditingController extends Controller
+class WordEditController extends Controller
 {
 
     public function actionIndex()
@@ -25,7 +24,7 @@ class WordEditingController extends Controller
         if(isset($_POST['Words'])){
 
             $word = Words::findOne(['id'  => $form['id']]);
-            $word->delete();
+//            $word->delete();
 
         }
 
@@ -44,5 +43,7 @@ class WordEditingController extends Controller
             'pages' => $pages,
         ]);
     }
+
+
 
 }

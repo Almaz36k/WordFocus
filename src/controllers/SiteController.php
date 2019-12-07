@@ -61,6 +61,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+//        echo Yii::$app->user->id;
         return $this->render('index');
     }
 
@@ -79,6 +80,8 @@ class SiteController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
         }
+
+//        print_r(Yii::$app->user);
 
         $model->password = '';
         return $this->render('login', [
