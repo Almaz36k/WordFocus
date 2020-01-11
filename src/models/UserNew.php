@@ -2,7 +2,6 @@
 
 namespace app\models;
 
-use Yii;
 use yii\web\IdentityInterface;
 
 /**
@@ -14,6 +13,7 @@ use yii\web\IdentityInterface;
  * @property string $password
  * @property int $isAdmin
  * @property string $token
+ * @property int $confirmed
  */
 class UserNew extends \yii\db\ActiveRecord implements IdentityInterface
 {
@@ -50,6 +50,7 @@ class UserNew extends \yii\db\ActiveRecord implements IdentityInterface
             'password' => 'Password',
             'isAdmin' => 'Is Admin',
             'token' => 'token',
+            'confirmed' => 'confirmed',
         ];
     }
 
@@ -134,5 +135,27 @@ class UserNew extends \yii\db\ActiveRecord implements IdentityInterface
     public static function findByName($name)
     {
         return UserNew::findOne(['name' => $name]);
+    }
+
+    public static function findByEmail($email)
+    {
+        return UserNew::findOne(['email' => $email]);
+    }
+
+    public static function createUser($array_params)
+    {
+        $user = New UserNew();
+        $user->setAttributes($array_params);
+        $isExist = UserNew::find()->where(['email' => $user->email, 'name' => $user->name])->exists();
+        if(!$isExist){
+         $user->save();
+         return $user;
+         }
+    }
+
+    public function confirmEmail()
+    {
+        $this->confirmed = 1;
+        $this->save();
     }
 }
