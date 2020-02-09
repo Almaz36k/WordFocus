@@ -2,9 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\User;
 use Yii;
 use yii\rest\Controller;
-use \app\models\UserNew;
+use yii\web\UnauthorizedHttpException;
 
 class AuthController extends Controller
 {
@@ -30,36 +31,23 @@ class AuthController extends Controller
             'confirmed' => 0
         ];
 
-        $create_user = UserNew::createUser($user_attribute);
+        $new_user = new User;
+        $create_user = $new_user->createUser($user_attribute);
 
         if($create_user) {
             Yii::$app->mailer->compose()
                 ->setFrom('aksakal1243@gmail.com')
                 ->setTo($email)
-                ->setSubject('подтверждение регистрации')
+                ->setSubject('Подтверждение регистрации')
                 ->setHtmlBody(
-                    '<a href="http://word_focus.azition.pro/auth/confirm-email?token=' . $token . '">
+                    '<a href="http://word_focus.azition.pro/confirm?token=' . $token . '">
                          Подтвердить регистрацию
                        </a>'
                 )
                 ->send();
+        } else {
+            throw new UnauthorizedHttpException("Login или Email уже заняты!");
         }
-    }
-
-    public static function actionConfirmEmail()
-    {
-        $request = Yii::$app->request;
-
-        $token = $request->get('token');
-
-        $user = UserNew::findIdentityByAccessToken($token);
-
-        if ($user) {
-            $user->confirmEmail();
-            return true;
-        }
-
-        return 1;
     }
 
     public function actionLogin()
@@ -69,20 +57,24 @@ class AuthController extends Controller
         $name = $request->post('name');
         $password = $request->post('password');
 
-        $user = UserNew::findByName($name);
+        $user = User::findByName($name);
         if ($user->validatePassword($password)) {
-            $user->token = Yii::$app->security->generateRandomString(64);
-            $user->save();
-            return $user->token;
+            if ($user->confirmed == 1) {
+                $user->token = Yii::$app->security->generateRandomString(64);
+                $user->save();
+                return $user->token;
+            } else {
+                throw new UnauthorizedHttpException("Подтвердите почту!");
+            }
         }
-        return false;
+        throw new UnauthorizedHttpException("Неверные данные!");
     }
 
     public function actionLogout()
     {
         $request = Yii::$app->request;
         $token = $request->post('token');
-        $user = UserNew::findOne(['token' => $token]);
+        $user = User::findOne(['token' => $token]);
         $user->token = '';
         $user->save();
     }

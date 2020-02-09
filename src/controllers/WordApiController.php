@@ -1,12 +1,14 @@
 <?php
 namespace app\controllers;
 
-use app\models\UserNew;
+use app\models\User;
 use app\models\Word;
 use app\models\UserWords;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\rest\Controller;
+use yii\web\BadRequestHttpException;
+
 class WordApiController extends Controller
 {
     public function actionIndex()
@@ -19,17 +21,15 @@ class WordApiController extends Controller
         $request = Yii::$app->request;
         $token = $request->post('token');
         $my_words = $request->post('myWords');
-        if($user = UserNew::findIdentityByAccessToken($token)) {
 
-            if ($my_words) {
-                $all_id = UserWords::find()
-                    ->select('word_id as id')
-                    ->where(['user_id' => $user->id, 'is_owner' => 1])
-                    ->asArray()
-                    ->all();
+        if($user = User::findIdentityByAccessToken($token)) {
+            if ($my_words == 'true' && $user->getCountUserWords() >= 4) {
+                $all_id = $user->getUserWords();
             } else {
                 $all_id = Word::find()
                     ->select('id')
+//                    ->limit('count(t.id)/2')
+//                    ->orderBy('good_answers')
                     ->asArray()
                     ->all();
             }
@@ -53,7 +53,7 @@ class WordApiController extends Controller
             $posts = $provider->getModels();
             return $posts;
         }
-        return ' not valid token';
+        throw new BadRequestHttpException("not valid token");
     }
 
 
@@ -63,7 +63,8 @@ class WordApiController extends Controller
         $token = $request->post('token');
         $word_id = $request->post('word_id');
         $translate_id = $request->post('translate_id');
-        if ($user = UserNew::findIdentityByAccessToken($token)) {
+        if ($user = User::findIdentityByAccessToken($token)) {
+
             $db = Yii::$app->db;
             $transaction = $db->beginTransaction();
             try {
@@ -79,6 +80,7 @@ class WordApiController extends Controller
                 throw $e;
             }
         }
+        throw new BadRequestHttpException("not valid token");
     }
 
     public function actionAddWord()
@@ -88,7 +90,7 @@ class WordApiController extends Controller
         $translate = $request->post('translate');
         $token = $request->post('token');
 
-        if($user = UserNew::findIdentityByAccessToken($token)) {
+        if($user = User::findIdentityByAccessToken($token)) {
            $db = Yii::$app->db;
             $transaction = $db->beginTransaction();
             try {
@@ -105,6 +107,6 @@ class WordApiController extends Controller
                 throw $e;
             }
         }
-        return 'not valid token';
+        throw new BadRequestHttpException("not valid token");
     }
 }
