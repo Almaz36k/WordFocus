@@ -67,4 +67,21 @@ class Word extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Translate::className(), ['word_id' => 'id']);
     }
+
+    public static function getAllWordsId()
+    {
+        $all_id = Word::find()
+            ->select('id')
+//          ->limit('count(t.id)/2')
+//           ->orderBy('good_answers')
+            ->asArray()
+            ->all();
+
+        $array_id = [];
+        foreach ($all_id as $id) {
+            $array_id[] = $id['id'];
+        }
+
+        return $array_id;
+    }
 }

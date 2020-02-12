@@ -1,4 +1,5 @@
 <?php
+
 namespace app\controllers;
 
 use app\models\User;
@@ -18,44 +19,48 @@ class WordApiController extends Controller
 
     public function actionGetRandomWords()
     {
+        $words_id = Word::getAllWordsId();
+
+        $words = self::getRandomWordsById($words_id);
+
+        return $words;
+    }
+
+    public function getRandomUserWords()
+    {
         $request = Yii::$app->request;
         $token = $request->post('token');
         $my_words = $request->post('myWords');
 
-        if($user = User::findIdentityByAccessToken($token)) {
-            if ($my_words == 'true' && $user->getCountUserWords() >= 4) {
-                $all_id = $user->getUserWords();
-            } else {
-                $all_id = Word::find()
-                    ->select('id')
-//                    ->limit('count(t.id)/2')
-//                    ->orderBy('good_answers')
-                    ->asArray()
-                    ->all();
+        if ($user = User::findIdentityByAccessToken($token)) {
+            if ($user->getCountUserWords() >= 4) {
+                $words_id = $user->getUserWordsId();
+                $words = self::getRandomWordsById($words_id);
+
+                return $words;
             }
-
-            $array_id = [];
-            foreach ($all_id as $id) {
-                $array_id[] = $id['id'];
-            }
-            $array_rand_id = array_rand(array_flip($array_id), 4);
-
-            $provider = new ActiveDataProvider([
-                'query'      => Word::find()
-                    ->with('translate')
-                    ->asArray()
-                    ->where(['in', 'id', $array_rand_id]),
-                'pagination' => [
-                    'pageSize' => 20,
-                ],
-            ]);
-
-            $posts = $provider->getModels();
-            return $posts;
+            throw new BadRequestHttpException("not enough words");
         }
         throw new BadRequestHttpException("not valid token");
     }
 
+    public function getRandomWordsById($array_with_keys)
+    {
+        $array_rand_id = array_rand(array_flip($array_with_keys), 4);
+
+        $provider = new ActiveDataProvider([
+            'query'      => Word::find()
+                ->with('translate')
+                ->asArray()
+                ->where(['in', 'id', $array_rand_id]),
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
+
+        $posts = $provider->getModels();
+        return $posts;
+    }
 
     public function actionUpdateAnswers()
     {
@@ -72,10 +77,10 @@ class WordApiController extends Controller
 
                 $transaction->commit();
                 return true;
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $transaction->rollBack();
                 throw $e;
-            } catch(\Throwable $e) {
+            } catch (\Throwable $e) {
                 $transaction->rollBack();
                 throw $e;
             }
@@ -90,19 +95,19 @@ class WordApiController extends Controller
         $translate = $request->post('translate');
         $token = $request->post('token');
 
-        if($user = User::findIdentityByAccessToken($token)) {
-           $db = Yii::$app->db;
+        if ($user = User::findIdentityByAccessToken($token)) {
+            $db = Yii::$app->db;
             $transaction = $db->beginTransaction();
             try {
 
-                Word::addWord($word,$translate,$user->id);
+                Word::addWord($word, $translate, $user->id);
 
                 $transaction->commit();
                 return true;
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $transaction->rollBack();
                 throw $e;
-            } catch(\Throwable $e) {
+            } catch (\Throwable $e) {
                 $transaction->rollBack();
                 throw $e;
             }
