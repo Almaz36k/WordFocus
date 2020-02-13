@@ -82,4 +82,9 @@ class UserWords extends \yii\db\ActiveRecord
         }
         $user_word->updateAnswers();
     }
+
+    public function getWords()
+    {
+        return $this->hasOne(Word::className(), ['id' => 'word_id']);
+    }
 }

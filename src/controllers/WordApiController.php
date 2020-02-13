@@ -26,7 +26,7 @@ class WordApiController extends Controller
         return $words;
     }
 
-    public function getRandomUserWords()
+    public function actionGetRandomUserWords()
     {
         $request = Yii::$app->request;
         $token = $request->post('token');
@@ -34,12 +34,25 @@ class WordApiController extends Controller
 
         if ($user = User::findIdentityByAccessToken($token)) {
             if ($user->getCountUserWords() >= 4) {
-                $words_id = $user->getUserWordsId();
+                $words_id = $user->getUserOwnerWordsId();
                 $words = self::getRandomWordsById($words_id);
 
                 return $words;
             }
             throw new BadRequestHttpException("not enough words");
+        }
+        throw new BadRequestHttpException("not valid token");
+    }
+
+    public function getResultsAnswersWords()
+    {
+        $request = Yii::$app->request;
+        $token = $request->post('token');
+
+        if ($user = User::findIdentityByAccessToken($token)) {
+            $words = $user->getAllUserWords();
+
+            return $words;
         }
         throw new BadRequestHttpException("not valid token");
     }
