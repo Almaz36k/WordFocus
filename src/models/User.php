@@ -4,6 +4,7 @@ namespace app\models;
 
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "user".
