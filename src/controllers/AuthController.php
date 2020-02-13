@@ -62,7 +62,7 @@ class AuthController extends Controller
             if ($user->confirmed == 1) {
                 $user->token = Yii::$app->security->generateRandomString(64);
                 $user->save();
-                return $user->token;
+                return ['token' => $user->token];
             } else {
                 throw new UnauthorizedHttpException("Подтвердите почту!");
             }
