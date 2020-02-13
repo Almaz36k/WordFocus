@@ -2,8 +2,9 @@
 
 namespace app\models;
 
-use yii\web\IdentityInterface;
 use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
+
 
 /**
  * This is the model class for table "user".
@@ -172,7 +173,7 @@ class User extends ActiveRecord implements IdentityInterface
         return count(self::getUserWords());
     }
 
-    public function getUserWords()
+    public function getUserWordsId()
     {
         return  UserWords::find()
 //            ->select('word_id as id')
