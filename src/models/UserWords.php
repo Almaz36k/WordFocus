@@ -80,11 +80,17 @@ class UserWords extends \yii\db\ActiveRecord
                 throw new Exception(json_encode($user_word->getErrors()));
             }
         }
-        $user_word->updateAnswers();
+
+        return $user_word;
     }
 
     public function getWords()
     {
         return $this->hasOne(Word::className(), ['id' => 'word_id']);
+    }
+
+    public function getTranslate()
+    {
+        return $this->hasOne(Translate::className(), ['id' => 'translate_id']);
     }
 }

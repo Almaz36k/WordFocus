@@ -44,12 +44,13 @@ class WordApiController extends Controller
         throw new BadRequestHttpException("not valid token");
     }
 
-    public function getResultsAnswersWords()
+    public function actionGetResultsAnswers()
     {
         $request = Yii::$app->request;
         $token = $request->post('token');
 
         if ($user = User::findIdentityByAccessToken($token)) {
+
             $words = $user->getAllUserWords();
 
             return $words;
@@ -86,7 +87,8 @@ class WordApiController extends Controller
             $db = Yii::$app->db;
             $transaction = $db->beginTransaction();
             try {
-                UserWords::addWord($word_id, $translate_id, $user->id);
+                $user_word = UserWords::addWord($word_id, $translate_id, $user->id);
+                $user_word->updateAnswers();
 
                 $transaction->commit();
                 return true;
