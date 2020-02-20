@@ -170,13 +170,13 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getCountUserWords()
     {
-        return count(self::getUserWords());
+        return count(self::getAllUserWords());
     }
 
     public function getUserOwnerWordsId()
     {
         return  UserWords::find()
-//            ->select('word_id as id')
+            ->select('word_id as id')
             ->where(['user_id' => $this->id, 'is_owner' => 1])
             ->asArray()
             ->all();

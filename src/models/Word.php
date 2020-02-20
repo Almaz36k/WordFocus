@@ -49,7 +49,7 @@ class Word extends \yii\db\ActiveRecord
         return Word::findOne(['word' => $word]);
     }
 
-    public static function addWord($new_word,$new_translate,$user_id)
+    public static function addWord($new_word, $new_translate, $user_id)
     {
         $word = Word::searchWord($new_word);
         if(!$word){

@@ -74,7 +74,7 @@ class UserWords extends \yii\db\ActiveRecord
             $user_word->word_id = $word_id;
             $user_word->translate_id = $translate_id;
             $user_word->user_id = $user_id;
-            $user_word->is_owner = 1;
+            $user_word->is_owner = 0;
             $user_word->good_answers = 0;
             if(!$user_word->save()){
                 throw new Exception(json_encode($user_word->getErrors()));

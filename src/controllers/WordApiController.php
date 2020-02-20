@@ -30,7 +30,6 @@ class WordApiController extends Controller
     {
         $request = Yii::$app->request;
         $token = $request->post('token');
-        $my_words = $request->post('myWords');
 
         if ($user = User::findIdentityByAccessToken($token)) {
             if ($user->getCountUserWords() >= 4) {
