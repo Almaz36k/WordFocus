@@ -34,7 +34,7 @@ class WordApiController extends Controller
         if ($user = User::findIdentityByAccessToken($token)) {
             if ($user->getCountUserWords() >= 4) {
                 $words_id = $user->getUserOwnerWordsId();
-                
+
                 $words = self::getRandomWordsById($words_id);
 
                 return $words;
