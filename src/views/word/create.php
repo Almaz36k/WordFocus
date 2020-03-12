@@ -1,7 +1,11 @@
 <?php
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-print_r($_POST);
+/* @var $this yii\web\View */
+/* @var $model app\models\Word */
+$this->title = 'Add Words';
+$this->params['breadcrumbs'][] = ['label' => 'Words', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <? $form = ActiveForm::begin() ?>
 <?= $form->field($model, 'raw_words')->textarea(['rows' => '6'])->label(false) ?>
